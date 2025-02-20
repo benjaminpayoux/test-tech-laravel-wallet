@@ -1,13 +1,17 @@
 <?php
 
+declare(strict_types=1);
+
 namespace App\Http\Controllers\Api\V1;
 
+use App\Actions\PerformWalletTransfer;
 use Illuminate\Http\Request;
 use App\Models\RecurringTransfer;
+use App\Http\Requests\Api\V1\StoreRecurringTransferRequest;
 
 class RecurringTransferController
 {
-    public function create(Request $request)
+    public function create(StoreRecurringTransferRequest $request, PerformWalletTransfer $performWalletTransfer)
     {
         $recurring_transfer = new RecurringTransfer;
 
@@ -20,6 +24,15 @@ class RecurringTransferController
         $recurring_transfer->reason = $request->input('reason');
 
         $recurring_transfer->save();
+
+        $recipient = $request->getRecipient();
+
+        $performWalletTransfer->execute(
+            sender: $request->user(),
+            recipient: $recipient,
+            amount: $request->input('amount'),
+            reason: $request->input('reason'),
+        );
 
         return response()->noContent(201);
     }

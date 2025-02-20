@@ -15,4 +15,5 @@ Route::middleware(['auth:sanctum', 'throttle:api'])->prefix('v1')->group(functio
     Route::post('/wallet/send-money', SendMoneyController::class);
 
     Route::post('/recurring-transfers', [RecurringTransferController::class, 'create']);
+    Route::get('/recurring-transfers', [RecurringTransferController::class, 'index']);
 });
