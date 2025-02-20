@@ -67,3 +67,17 @@ test('cannot send money to a friend with insufficient balance', function () {
         ->assertSessionHas('money-sent-recipient-name', $recipient->name)
         ->assertSessionHas('money-sent-amount', 10_00);
 });
+
+test('that wallet is created if user does not have one', function () {
+    $user = User::factory()->create();
+    
+    $response = actingAs($user)->get('/');
+    
+    $response
+        ->assertOk()
+        ->assertSeeTextInOrder([
+            __('Balance'),
+            Number::currencyCents(0),
+            'Transactions history',
+        ]);
+});
